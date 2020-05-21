@@ -104,3 +104,18 @@ get '/change_nick' do
   manager.broadcast Message.new('change_nick', old: old, new: new)
   [200, { 'Content-Type': 'text/plain' }, 'okay']
 end
+
+post '/send' do
+  begin
+    request.body.rewind
+    body = JSON.parse(request.body.read)
+  rescue JSON::ParserError
+    [400, { 'Content-Type': 'text/plain' }, "JSON Parse Error"]
+  else
+    sender = body['sender']
+    contents = body['contents']
+    return [400, { 'Content-Type': 'text/plain' }, 'bad arguments'] unless sender and contents
+    manager.broadcast Message.new('message', sender: sender, contents: contents)
+    [200, { 'Content-Type': 'text/plain' }, 'okay']
+  end
+end

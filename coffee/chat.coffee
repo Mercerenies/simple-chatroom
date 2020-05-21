@@ -14,18 +14,28 @@ setNickname = (nick) ->
   nickname = nick
   $("#nickname").text nick
 
+messyEscape = (str) ->
+  # I know this isn't the neatest way to do this, but meh. This is
+  # just a prototype.
+  $("<div>").text(str).html()
+
 onEvent = (event) ->
   json = JSON.parse(event.data)
   switch json['type']
     when 'join'
-      showMessage "<b>#{json['nickname']}</b> has joined"
+      showMessage "<b>#{messyEscape json['nickname']}</b> has joined"
     when 'depart'
-      showMessage "<b>#{json['nickname']}</b> has left"
+      showMessage "<b>#{messyEscape json['nickname']}</b> has left"
     when 'change_nick'
-      old_ = json['old']
-      new_ = json['new']
+      old_ = messyEscape json['old']
+      new_ = messyEscape json['new']
       showMessage "<b>#{old_}</b> is now known as <b>#{new_}</b>"
-  console.log "Event received: #{JSON.stringify(json)}"
+    when 'message'
+      sender = messyEscape json['sender']
+      contents = messyEscape json['contents']
+      showMessage "<b>#{sender}: </b> #{contents}"
+    else
+      console.log "Event received: #{JSON.stringify(json)}"
 
 sendDepartMsg = ->
   navigator.sendBeacon "/depart", JSON.stringify({ nickname: nickname })
@@ -46,6 +56,13 @@ inputNewNick = ->
     setNickname(result)
   else
     alert "Invalid nickname (must be between 1 and 25 characters and only consist of alphanumerics, space, or _-+"
+
+sendMessage = ->
+  value = $("#message_text").val()
+  $.ajax
+    type: 'POST'
+    url: '/send'
+    data: JSON.stringify({ 'sender': nickname, 'contents': value })
 
 initializeConnection = ->
   nick = await $.ajax '/request_nick'
@@ -68,3 +85,4 @@ $ ->
     return
   await initializeConnection()
   $("#change_nick").click inputNewNick
+  $("#send_message").click sendMessage
