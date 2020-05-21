@@ -96,3 +96,11 @@ post '/depart' do
     [200, { 'Content-Type': 'text/plain' }, 'okay']
   end
 end
+
+get '/change_nick' do
+  old = params['old']
+  new = params['new']
+  return [400, { 'Content-Type': 'text/plain' }, 'bad arguments'] unless old and new
+  manager.broadcast Message.new('change_nick', old: old, new: new)
+  [200, { 'Content-Type': 'text/plain' }, 'okay']
+end
