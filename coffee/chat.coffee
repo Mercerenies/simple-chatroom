@@ -59,6 +59,7 @@ inputNewNick = ->
 
 sendMessage = ->
   value = $("#message_text").val()
+  $("#message_text").val ""
   $.ajax
     type: 'POST'
     url: '/send'
@@ -84,5 +85,10 @@ $ ->
     showError "Server-Sent Events are not supported in your browser"
     return
   await initializeConnection()
+  $("#message_text").val ""
   $("#change_nick").click inputNewNick
   $("#send_message").click sendMessage
+  $("#message_text").keyup (event) ->
+    if event.keyCode == 13
+      event.preventDefault()
+      sendMessage()
