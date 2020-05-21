@@ -49,8 +49,9 @@ class Message
 end
 
 FirstWord = %w[Deterministic Commutative Associative Monoidal Symmetric Categorical
-          Admissable Consistent]
-SecondWord = %w[Aardvark Penguin Dolphin Sprite Goose Duck Lion Tiger Goat]
+          Admissable Consistent Tautological Monadic Functorial Linear Quadratic Polynomial]
+SecondWord = %w[Aardvark Penguin Dolphin Sprite Goose Duck Lion Tiger Goat Coyote Armadillo
+           Canary Dove Eagle Pigeon]
 
 def generate_nick
   "#{FirstWord.sample} #{SecondWord.sample}"
